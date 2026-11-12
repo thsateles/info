@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conociendo la sangre · Actividad 07</title>
+<style>
+:root{--bg:#fbf7f6;--card:#fff;--tx:#2a1a1a;--mu:#7a6666;--ac:#b3202f;--bl:#1f4e8c;--bd:#e8d9d7;--ok:#1b7f4b;--ko:#b3202f;--pl:#e9c75d;--rb:#c42a3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1214;--card:#261b1e;--tx:#f3e8e6;--mu:#b9a5a3;--ac:#ff6b78;--bl:#7fb0f0;--bd:#4a3539;--ok:#5fd596;--ko:#ff6b78}}
+:root[data-theme="dark"]{--bg:#1a1214;--card:#261b1e;--tx:#f3e8e6;--mu:#b9a5a3;--ac:#ff6b78;--bl:#7fb0f0;--bd:#4a3539;--ok:#5fd596;--ko:#ff6b78}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Georgia,"Times New Roman",serif;line-height:1.55}
+header{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--bd)}
+h1{font-size:1.05rem;margin:0;color:var(--ac);flex:1}
+.ib{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:4px 9px;cursor:pointer}
+#pg{height:4px;background:var(--bd)}#pg div{height:100%;width:0;background:var(--ac);transition:width .3s}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;border-bottom:1px solid var(--bd)}
+nav button{white-space:nowrap;font:inherit;font-size:.8rem;padding:5px 10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:16px;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{max-width:780px;margin:0 auto;padding:20px 18px 40px}
+h2{margin:0 0 10px;font-size:1.55rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin:10px 0}
+.q{font-style:italic;color:var(--bl)}.mu{color:var(--mu);font-size:.88rem}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;padding:8px 14px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;cursor:pointer;text-align:left}
+.btn:hover{border-color:var(--ac)}.btn.sel{background:var(--ac);color:#fff;border-color:var(--ac)}
+.opt{display:block;width:100%;margin:6px 0}.opt.ok{border-color:var(--ok);color:var(--ok)}.opt.ko{border-color:var(--ko);color:var(--ko)}
+.fb{margin-top:8px;color:var(--mu);font-size:.93rem}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+.bar{display:flex;height:54px;border-radius:8px;overflow:hidden;border:1px solid var(--bd)}
+.bar div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;cursor:pointer}
+.flip{perspective:600px;width:150px;height:120px;cursor:pointer}
+.fi{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.on .fi{transform:rotateY(180deg)}
+.fi div{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;font-size:.82rem}
+.fi .f{background:var(--card);font-weight:bold;font-size:1rem}.fi .b{background:var(--bl);color:#fff;transform:rotateY(180deg)}
+.tube{width:70px;height:200px;border:2px solid var(--mu);border-radius:0 0 35px 35px;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0}
+.tube i{display:block;transition:height .2s}
+.mt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mt .btn{text-align:center;font-size:.9rem}.mt .done{border-color:var(--ok);color:var(--ok);opacity:.7;pointer-events:none}
+.mt .ko{border-color:var(--ko);color:var(--ko)}
+input[type=range]{width:100%;accent-color:var(--ac)}
+svg text{fill:var(--tx);font-size:11px;font-family:sans-serif}
+[data-f]{transition:opacity .5s}
+</style>
+</head>
+<body>
+<header><h1>Conociendo la sangre: un recorrido por la fisiología sanguínea</h1><button class="ib" id="th" title="Tema">🌓</button><button class="ib" id="fs" title="Pantalla completa">⛶</button></header>
+<div id="pg"><div></div></div>
+<nav id="nav"></nav>
+<main id="m"></main>
+<script>
+const T=["Apertura","Composición","Plasma","Eritrocitos","Leucocitos","Hemostasia","Hematopoyesis","Clínica","Cuestionario","Cierre"];
+let i=0,st={};
+const $=s=>document.querySelector(s);
+const R=(items)=>`<div class="row">${items.map(([k,t])=>`<button class="btn" onclick="rv(this,'${k}')">${t}</button>`).join("")}</div><div class="card" id="r">Toca una opción para ver la explicación.</div>`;
+const D={p1:"Albúmina: contribuye a la presión oncótica del plasma y transporta diferentes sustancias.",p2:"Globulinas: proteínas de transporte e inmunoglobulinas, relacionadas con la defensa del organismo.",p3:"Fibrinógeno: precursor de la fibrina, esencial para la formación del coágulo.",p4:"También: sodio, potasio, calcio, cloruro, bicarbonato, glucosa, aminoácidos, lípidos, hormonas y residuos. Mantienen el equilibrio ácido-base, osmótico e hidroelectrolítico.",
+e1:"Sin núcleo (maduros) y con forma de disco bicóncavo: más superficie para el intercambio gaseoso y paso fácil por los capilares.",e2:"En los pulmones la hemoglobina se une de forma reversible al O₂; en los tejidos lo libera.",e3:"Una parte del CO₂ viaja unida a la hemoglobina, pero la mayoría circula como bicarbonato, tras una conversión que ocurre sobre todo dentro del eritrocito.",e4:"Eritropoyesis: ocurre en la médula ósea roja. La eritropoyetina (producida sobre todo en el riñón ante poca disponibilidad de O₂) la estimula. Vida media del eritrocito: ~120 días.",e5:"Anemia = disminución de la concentración de hemoglobina. Causas: deficiencia de hierro, B12 o folato, pérdida de sangre, hemólisis o menor producción medular.",
+m1:"En el adulto ocurre principalmente en la médula ósea roja.",m2:"Todas las líneas derivan de células madre hematopoyéticas, que originan progenitores de eritrocitos, leucocitos y megacariocitos.",m3:"Regulada por factores de crecimiento y citocinas: eritropoyetina (eritrocitos) y trombopoyetina (plaquetas). La producción aumenta o disminuye según las necesidades.",
+k1:"Hemograma: evalúa eritrocitos, leucocitos y plaquetas.",k2:"Hemoglobina y hematocrito: ayudan a investigar anemias y alteraciones del volumen sanguíneo.",k3:"Recuento y diferencial de leucocitos: apoyan la evaluación de procesos infecciosos, inflamatorios y hematológicos.",k4:"Plaquetas y pruebas de coagulación: ayudan a investigar hemorragias y trombosis."};
+function rv(b,k){$('#r').textContent=D[k];b.parentElement.querySelectorAll('.btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}
+/* MCQ genérico */
+const QZ=[["¿Cuál es la parte líquida de la sangre?",["Eritrocito","Plasma","Plaqueta","Neutrófilo"],1,"Plasma: matriz líquida que transporta células y sustancias."],
+["¿Qué componente transporta la mayor parte del oxígeno en la sangre?",["Albúmina","Plaquetas","Hemoglobina","Fibrinógeno"],2,"Hemoglobina, presente en el interior de los eritrocitos."],
+["¿Qué célula está especialmente relacionada con la fagocitosis de bacterias?",["Neutrófilo","Eritrocito","Plaqueta","Linfocito B"],0,"Neutrófilo: importante en la respuesta inmunitaria innata."],
+["¿Dónde ocurre principalmente la hematopoyesis en el adulto?",["Bazo","Hígado","Médula ósea roja","Páncreas"],2,"En la médula ósea roja."],
+["¿Cuál es la función principal de las plaquetas?",["Transportar oxígeno","Participar en la hemostasia","Producir anticuerpos","Transportar hormonas"],1,"Forman el tapón plaquetario y contribuyen a la coagulación."]];
+const CS=[["Caso 1. Sangrado de mucosas tras una lesión mínima, con recuento de plaquetas muy disminuido. ¿Qué fase de la hemostasia está más comprometida?",["Hemostasia primaria (tapón plaquetario)","Fibrinólisis","Eritropoyesis","Fagocitosis"],0,"Las plaquetas forman el tapón plaquetario, es decir, la hemostasia primaria."],
+["Caso 2. Un paciente tiene fatiga y palidez, con concentración de hemoglobina disminuida. ¿Qué condición se define así?",["Leucocitosis","Anemia","Trombosis","Hematopoyesis"],1,"La disminución de la concentración de hemoglobina caracteriza la anemia; la causa se investiga con análisis y evaluación clínica."],
+["Caso 3. En una infección bacteriana aguda, ¿qué cambio puede aparecer en el hemograma?",["Leucocitosis","Leucopenia obligatoria","Ausencia de neutrófilos","Aumento de fibrinólisis"],0,"La leucocitosis (aumento de leucocitos) puede ocurrir en infecciones; los neutrófilos suelen intervenir en la respuesta inicial."],
+["Caso 4. ¿Por qué los parámetros de eritrocitos pueden diferir en una persona que vive a gran altitud?",["Porque la sangre pierde plasma","Por adaptación a menor presión parcial de oxígeno","Porque desaparecen las plaquetas","Porque no hay eritropoyetina"],1,"La adaptación fisiológica a menor presión parcial de O₂ puede modificar los parámetros; hay que usar valores de referencia adecuados."]];
+function mcq(key,L){const a=st[key]=st[key]||{};const ok=Object.keys(a).filter(n=>a[n]===L[n][2]).length;
+return L.map((q,n)=>`<div class="card"><b>${q[0]}</b>${q[1].map((o,j)=>{let c="";if(n in a)c=j===q[2]?" ok":(a[n]===j?" ko":"");return`<button class="btn opt${c}" onclick="an('${key}',${n},${j})">${"ABCD"[j]}) ${o}</button>`}).join("")}${n in a?`<div class="fb">${a[n]===q[2]?"✅ ¡Correcto! ":"❌ Incorrecto. "}${q[3]}</div>`:""}</div>`).join("")+`<div class="card"><b>Puntuación: ${ok} / ${L.length}</b> <span class="mu">(${Object.keys(a).length} respondidas)</span> <button class="btn" onclick="st['${key}']={};go(i,1)">Reiniciar</button></div>`}
+function an(k,n,j){const a=st[k]=st[k]||{};if(n in a)return;a[n]=j;go(i,1)}
+/* Hematocrito */
+function ht(v){const p=100-v;$('#hp').style.height=p+'%';$('#hr').style.height=v+'%';$('#hv').textContent=v+' %';
+$('#hn').textContent=v<30?"Hematocrito bajo: se relaciona con anemia o con alteraciones del volumen sanguíneo.":v>50?"Hematocrito alto: puede relacionarse con deshidratación, altitud u otras causas.":"Rango intermedio: los valores de referencia varían según sexo, edad, embarazo y altitud."}
+/* Hemostasia */
+const HS=["Daño del endotelio vascular: se expone la lesión.","Las plaquetas se adhieren a la zona dañada, se activan y liberan sustancias que reclutan más plaquetas.","Se forma el tapón plaquetario: hemostasia primaria.","La cascada de coagulación genera trombina, que convierte fibrinógeno en fibrina. La red de fibrina estabiliza el tapón.","Fibrinólisis: degradación controlada del coágulo una vez reparada la lesión."];
+let hp=null;
+function hs(s){st.h=s;document.querySelectorAll('[data-f]').forEach(e=>{const f=+e.dataset.f,t=+e.dataset.t||9;e.style.opacity=s>=f&&s<=t?1:(s>t&&e.dataset.l?.3:0)});$('#ht').textContent=s+". "+HS[s-1];document.querySelectorAll('.hb').forEach((b,k)=>b.classList.toggle('sel',k+1===s))}
+function hplay(){clearInterval(hp);let s=1;hs(1);hp=setInterval(()=>{s++;if(s>5){clearInterval(hp);return}hs(s)},2200)}
+/* Emparejar */
+const MP=[["Neutrófilo","Fagocitosis de bacterias"],["Eosinófilo","Parásitos y alergias"],["Basófilo","Libera histamina"],["Linfocito","Inmunidad adaptativa"],["Plaqueta","Tapón en la hemostasia"],["Eritrocito","Transporta O₂"]];
+let mo=null,mn=0,mr=[];
+function mpInit(){mo=null;mn=0;mr=MP.map((m,k)=>k).sort(()=>Math.random()-.5)}
+function mp(side,k,el){if(el.classList.contains('done'))return;
+if(side==='l'){mo=k;document.querySelectorAll('.ml').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');return}
+if(mo===null)return;
+if(mo===k){el.classList.add('done');document.querySelector('.ml.sel').classList.replace('sel','done');mn++;mo=null;$('#ms').textContent=mn+" / "+MP.length+(mn===MP.length?" 🎉 ¡Completo!":"")}
+else{el.classList.add('ko');setTimeout(()=>el.classList.remove('ko'),500)}}
+const fl=(a,b)=>`<div class="flip" onclick="this.classList.toggle('on')"><div class="fi"><div class="f">${a}</div><div class="b">${b}</div></div></div>`;
+const H=[
+()=>`<h2>Tejido sanguíneo</h2><p class="q">¿Por qué la sangre se considera un tejido?</p><div class="card">Porque tiene células y fragmentos celulares (elementos formes) distribuidos en una matriz extracelular líquida: el plasma.</div><p class="mu">Beatriz Silva Veronezi · David de Oliveira Lacerda Leite · Dyones Cleve Pereira · Thiago Henrique de Sales Teles<br>Medicina · Universidad Privada Domingo Savio · Actividad 07</p><p class="mu">Navega con el menú, los botones o las flechas ← → del teclado.</p>`,
+()=>`<h2>Composición</h2><p>Toca cada parte de la barra:</p><div class="bar"><div style="width:55%;background:#b8921a" onclick="$('#c').textContent='Plasma (~55 %): agua, proteínas, electrolitos, nutrientes, hormonas, gases disueltos y residuos metabólicos.'">Plasma 55 %</div><div style="width:45%;background:#b3202f" onclick="$('#c').textContent='Elementos formes (~45 %): eritrocitos (los más numerosos), leucocitos (defensa) y plaquetas (hemostasia).'">Elementos formes 45 %</div></div><div class="card" id="c">El volumen sanguíneo adulto equivale a ~7–8 % de la masa corporal.</div>`,
+()=>`<h2>Plasma</h2>${R([["p1","Albúmina"],["p2","Globulinas"],["p3","Fibrinógeno"],["p4","Otros componentes"]])}`,
+()=>`<h2>Eritrocitos</h2>${R([["e1","Forma"],["e2","Hemoglobina y O₂"],["e3","Transporte de CO₂"],["e4","Eritropoyesis"],["e5","Anemia"]])}`,
+()=>`<h2>Leucocitos</h2><p class="mu">Toca cada carta para girarla.</p><div class="row">${fl("Neutrófilos","Respuesta inicial contra bacterias; fagocitosis.")}${fl("Eosinófilos","Defensa contra parásitos y procesos alérgicos.")}${fl("Basófilos","Liberan histamina y otros mediadores (alergia, inflamación).")}${fl("Monocitos","Se diferencian en macrófagos y otras células fagocíticas.")}${fl("Linfocitos","B, T y NK: inmunidad adaptativa.")}</div><div class="card"><b>Mini-juego: une cada célula con su función</b><div class="mt" id="mg"></div><p class="mu" id="ms">0 / ${MP.length}</p></div><p class="mu">Leucocitosis: aumento del número de leucocitos. Leucopenia: disminución.</p>`,
+()=>`<h2>Plaquetas y hemostasia</h2><p class="mu">Fragmentos de megacariocitos, sin núcleo. Pulsa un paso o ▶ para ver la secuencia.</p>
+<svg viewBox="0 0 400 170" width="100%" role="img" aria-label="Esquema de hemostasia"><rect x="0" y="20" width="400" height="14" fill="#b8575f"/><rect x="0" y="130" width="170" height="14" fill="#b8575f"/><rect x="230" y="130" width="230" height="14" fill="#b8575f"/>
+<text x="6" y="14">Luz del vaso</text><text x="186" y="165" data-f="1" data-t="9" style="fill:var(--ko)">Lesión</text>
+<g data-f="2" data-t="9"><circle cx="180" cy="124" r="7" fill="var(--pl)"/><circle cx="220" cy="124" r="7" fill="var(--pl)"/></g>
+<g data-f="3" data-t="9" data-l="1"><circle cx="195" cy="118" r="7" fill="var(--pl)"/><circle cx="208" cy="126" r="7" fill="var(--pl)"/><circle cx="200" cy="135" r="7" fill="var(--pl)"/><circle cx="192" cy="128" r="7" fill="var(--pl)"/></g>
+<g data-f="4" data-t="4" stroke="var(--tx)" stroke-width="1.2" opacity="0" data-l="1"><path d="M172 110L232 140M232 110L172 140M185 105L215 145M215 105L185 145M178 125H228"/></g>
+<g data-f="4" data-t="4" data-l="1"><circle cx="205" cy="108" r="9" fill="var(--rb)"/><circle cx="188" cy="112" r="9" fill="var(--rb)"/></g>
+<g><circle cx="60" cy="75" r="10" fill="var(--rb)"/><circle cx="300" cy="70" r="10" fill="var(--rb)"/><circle cx="130" cy="60" r="7" fill="var(--pl)"/><circle cx="340" cy="90" r="7" fill="var(--pl)"/></g>
+<text x="10" y="100" style="font-size:10px">● eritrocito &nbsp; <tspan style="fill:var(--pl)">●</tspan> plaqueta</text></svg>
+<div class="row">${[1,2,3,4,5].map(n=>`<button class="btn hb" onclick="clearInterval(hp);hs(${n})">${n}</button>`).join("")}<button class="btn" onclick="hplay()">▶ Reproducir</button></div><div class="card" id="ht"></div>`,
+()=>`<h2>Hematopoyesis</h2>${R([["m1","¿Dónde?"],["m2","Origen"],["m3","Regulación"]])}`,
+()=>`<h2>Aplicación clínica</h2>${R([["k1","Hemograma"],["k2","Hb y hematocrito"],["k3","Leucocitos"],["k4","Plaquetas y coagulación"]])}<div class="card"><b>Simulador de hematocrito</b><div class="row" style="flex-wrap:nowrap;align-items:center"><div class="tube"><i id="hp" style="background:var(--pl)"></i><i id="hr" style="background:var(--rb)"></i></div><div style="flex:1;padding-left:14px"><div style="font-size:1.6rem" id="hv"></div><input type="range" min="15" max="65" value="42" oninput="ht(+this.value)"><p class="mu" id="hn"></p></div></div><p class="mu">Herramienta educativa: los resultados nunca se interpretan de forma aislada.</p></div><h3>Casos breves</h3>${mcq('cs',CS)}`,
+()=>`<h2>Cuestionario</h2>${mcq('qz',QZ)}`,
+()=>`<h2>Cierre</h2><div class="card"><ul><li>Transporte, regulación, defensa y hemostasia son funciones interdependientes.</li><li>La hematopoyesis renueva continuamente los elementos formes.</li><li>Comprender la fisiología permite interpretar análisis de laboratorio y situaciones clínicas.</li></ul></div><h3>Referencias</h3><p class="mu">Hall JE. Guyton y Hall: tratado de fisiología médica. 14.ª ed. Elsevier; 2021.<br>Barrett KE et al. Ganong: fisiología médica. 26.ª ed. AMGH; 2019.<br>Mescher AL. Junqueira: histología básica. 16.ª ed. Guanabara Koogan; 2023.<br>Rodak BF et al. Hematología: principios clínicos y aplicaciones. 6.ª ed. Elsevier; 2020.<br>OpenStax. Anatomía y fisiología 2e. Rice University; 2022. openstax.org/details/books/anatomy-and-physiology-2e<br>NHLBI. La sangre. National Institutes of Health. nhlbi.nih.gov/health/blood</p>`];
+function go(n,keep){clearInterval(hp);const y=scrollY;i=n;
+$('#m').innerHTML=H[n]()+`<div class="foot"><button class="btn" onclick="go(Math.max(0,i-1))">← Anterior</button><span class="mu">${n+1} / ${T.length}</span><button class="btn" onclick="go(Math.min(T.length-1,i+1))">Siguiente →</button></div>`;
+document.querySelectorAll('#nav button').forEach((b,k)=>b.classList.toggle('on',k===n));
+$('#pg div').style.width=((n+1)/T.length*100)+'%';
+if(n===4){mpInit();$('#mg').innerHTML=MP.map((m,k)=>`<button class="btn ml" onclick="mp('l',${k},this)">${m[0]}</button><button class="btn" onclick="mp('r',${mr[k]},this)">${MP[mr[k]][1]}</button>`).join("")}
+if(n===5)hs(st.h||1);if(n===7)ht(42);
+if(location.hash!=='#'+(n+1))history.replaceState(null,'','#'+(n+1));
+keep?scrollTo(0,y):scrollTo(0,0)}
+$('#nav').innerHTML=T.map((t,k)=>`<button onclick="go(${k})">${k+1}. ${t}</button>`).join("");
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(Math.min(T.length-1,i+1));if(e.key==='ArrowLeft')go(Math.max(0,i-1))});
+$('#th').onclick=()=>{const d=document.documentElement,dk=d.dataset.theme?d.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dk?'light':'dark'};
+$('#fs').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+go(Math.min(T.length-1,Math.max(0,(parseInt(location.hash.slice(1))||1)-1)));
+</script>
+</body>
+</html>
